@@ -68,7 +68,7 @@ To get a sense, of what's possible I can query the following and get the expecte
 * Straightforward translation from OData metadata to GraphQL schema description
 
 ## Live demo
-[Try the Microsoft Graph GraphQL Demo here](https://msgql.azurewebsites.net)
+[Try the Microsoft Graph GraphQL Demo here](https://msgraphql-demo.azurewebsites.net/)
 
 ## Installation
 1. Clone the repo
