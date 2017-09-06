@@ -1,6 +1,6 @@
 # MSGraphQL (DEMO)
 ## What is this?
-This is a *demo* that enables basic querying of the [Microsoft Graph API](https://developer.microsoft.com/en-us/graph/) using [GraphQL query syntax](http://graphql.org/learn/queries/). GraphQL enables clients to request exactly the resources and properties that they need instead of making REST requests for each resource, combining and filtering the responses. This tooling makes this possible for Microsoft Graph by using OData $metadata CSDL as input and parsing for relationships. Few assumptions are made that are Graph-specific so this can likely be applied to a generic OData $metadata doc and produce reasonable output.
+This is a *demo* that enables basic querying of the [Microsoft Graph API](https://developer.microsoft.com/en-us/graph/) using [GraphQL query syntax](http://graphql.org/learn/queries/). GraphQL enables clients to request exactly the resources and properties that they need instead of making REST requests for each resource and consolidating the responses. This demo parses the Microsoft Graph API OData $metadata document and generates an OData frontend based on the relationships described. 
 
 To get a sense, of what's possible I can query the following and get the expected result:
 ```graphql
