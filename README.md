@@ -1,8 +1,8 @@
 # MSGraphQL (DEMO)
 ## What is this?
-This is a *demo* that enables basic querying of the [Microsoft Graph API](https://developer.microsoft.com/en-us/graph/) using [GraphQL query syntax](http://graphql.org/learn/queries/). GraphQL enables clients to request exactly the resources and properties that they need instead of making REST requests for each resource and consolidating the responses. This demo parses the Microsoft Graph API OData $metadata document and generates an OData frontend based on the relationships described. 
+This is a *demo* that enables basic querying of the [Microsoft Graph API](https://developer.microsoft.com/en-us/graph/) using [GraphQL query syntax](http://graphql.org/learn/queries/). GraphQL enables clients to request exactly the resources and properties that they need instead of making REST requests for each resource and consolidating the responses. To create a GraphQL service, this demo translates the [Microsoft Graph OData $metadata document](https://graph.microsoft.com/v1.0/$metadata) to a GraphQL schema and generates the necessary resolvers. 
 
-To get a sense, of what's possible I can query the following and get the expected result:
+To get a sense for what queries are possible:
 ```graphql
 
 {
@@ -62,7 +62,7 @@ To get a sense, of what's possible I can query the following and get the expecte
 ```
 
 ## Features
-* Enables (read-only) querying MS Graph using GraphQL query syntax - get back exactly what you need
+* Enables basic (read-only) querying MS Graph using GraphQL query syntax 
 * Integrates with other GraphQL tooling
 * OData inheritance is understood and implemented into the output GraphQL type definitions
 * Straightforward translation from OData metadata to GraphQL schema description
@@ -84,7 +84,7 @@ To get a sense, of what's possible I can query the following and get the expecte
 
 ## Limitations/to-dos
 * Support pagination
-* Implement mutations - interact with data as expected
+* Implement mutations
 * Enable passing arguments (like searching by name or filtering by id)
 * Add heuristics for $expand to reduce number of service calls made
 
