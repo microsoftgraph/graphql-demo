@@ -3,7 +3,7 @@
 This is a *demo* that enables basic querying of the [Microsoft Graph API](https://developer.microsoft.com/en-us/graph/) using [GraphQL query syntax](http://graphql.org/learn/queries/). GraphQL enables clients to request exactly the resources and properties that they need instead of making REST requests for each resource and consolidating the responses. To create a GraphQL service, this demo translates the [Microsoft Graph OData $metadata document](https://graph.microsoft.com/v1.0/$metadata) to a GraphQL schema and generates the necessary resolvers. 
 
 To get a sense for what queries are possible:
-![Animation of sample request]("./graphql-demo.gif")
+![Animation of sample request](./graphql-demo.gif)
 
 
 ## Features
