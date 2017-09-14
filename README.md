@@ -1,4 +1,4 @@
-# MSGraphQL (DEMO)
+# GraphQL for Microsoft Graph (DEMO)
 
 ## Call to action
 We are looking for feedback from developers interested in integrating with Microsoft Graph via GraphQL. To share your thoughts and scenarios, please leave a comment on [UserVoice](https://officespdev.uservoice.com/forums/224641-feature-requests-and-feedback/suggestions/16819672-graphql-api-for-the-microsoft-graph). 
