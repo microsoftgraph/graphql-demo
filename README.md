@@ -9,7 +9,7 @@ This is a *demo* that enables basic, read-only querying of the [Microsoft Graph 
 ![Animation of sample request](./graphql-demo.gif)
 
 ## Live demo
-[Try the Microsoft Graph GraphQL Demo here](https://msgraphql-demo.azurewebsites.net/)
+[Try the Microsoft Graph GraphQL Demo here](https://graphql-demo.azurewebsites.net/)
 
 ## Installation
 1. Clone the repo
