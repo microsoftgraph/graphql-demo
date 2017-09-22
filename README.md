@@ -81,9 +81,10 @@ This is a *demo* that enables basic, read-only querying of the [Microsoft Graph 
 
 ## Limitations/to-dos
 * [x] Translate OData inheritance relationships
+* [x] Enable passing arguments (id for indexing into collections)
 * [ ] Support pagination
 * [ ] Implement mutations
-* [ ] Enable passing arguments (like searching by name or filtering by id)
+* [ ] Enable passing arguments for sort, filter
 * [ ] Add heuristics for $expand to reduce number of service calls made
 
 ## Copyright
