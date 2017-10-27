@@ -89,6 +89,8 @@ This is a *demo* that enables basic, read-only querying of the [Microsoft Graph 
 * [ ] Enable passing arguments (like searching by name or filtering by id)
 * [ ] Add heuristics for $expand to reduce number of service calls made
 
+## Code of conduct
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Copyright
