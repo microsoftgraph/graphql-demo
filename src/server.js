@@ -16,7 +16,7 @@ const port = process.env.port || 1337;
 const { buildSchema } = require('graphql');
 const { makeExecutableSchema } = require('graphql-tools');
 const { resolvers } = require('./build/schema');
-const typeDefs = fs.readFileSync('./server/build/schema.graphql', 'utf8');
+const typeDefs = fs.readFileSync('./src/build/schema.graphql', 'utf8');
 
 const app = express();
 

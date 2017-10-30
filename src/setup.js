@@ -168,9 +168,9 @@ function generator(dependence, entities, complexTypes, enums, entitySets, single
     defs = _.union(defs,complexDefs);
     defs = _.union(defs, queryDefs);
     defs = _.union(defs, additionalScalarTypes);
-    saveCodeToFile('server/build/schema.graphql', false, defs.join(' '));
+    saveCodeToFile('src/build/schema.graphql', false, defs.join(' '));
     const resolverStr = generateResolverStr(dependence, entitySets, singletons, entities, complexTypes);
-    saveCodeToFile('server/build/schema.js', true, resolverStr);
+    saveCodeToFile('src/build/schema.js', true, resolverStr);
 }
 
 function saveCodeToFile(filename, format, code) {

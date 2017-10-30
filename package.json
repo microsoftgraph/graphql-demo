@@ -19,9 +19,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build": "node server/setup.js",
+    "build": "node src/setup.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/server.js"
+    "start": "node src/server.js"
   },
   "author": "",
   "license": "ISC"
