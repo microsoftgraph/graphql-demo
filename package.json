@@ -2,7 +2,7 @@
   "name": "msg",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "src/server.js",
   "dependencies": {
     "acorn": "^5.1.1",
     "astring": "^1.0.3",
@@ -21,7 +21,7 @@
   "scripts": {
     "build": "node src/setup.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node build/server.js"
+    "start": "node src/server.js"
   },
   "author": "",
   "license": "ISC"

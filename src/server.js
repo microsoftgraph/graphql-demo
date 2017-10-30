@@ -9,12 +9,14 @@ const request = require('request');
 const path = require('path');
 const https = require('https');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const port = process.env.port || 1337;
 
 const { buildSchema } = require('graphql');
 const { makeExecutableSchema } = require('graphql-tools');
-const { typeDefs, resolvers } = require('./schema');
+const { resolvers } = require('./build/schema');
+const typeDefs = fs.readFileSync('./src/build/schema.graphql', 'utf8');
 
 const app = express();
 

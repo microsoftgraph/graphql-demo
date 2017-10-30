@@ -10,6 +10,8 @@ const astring = require('astring');
 const request = require('request');
 const xmlConverter = require('xml-js');
 
+const { graphNameSpace, graphRoot }  = require('./constants');
+
 const primitiveTypeMapping = {
         'Edm.Binary' : 'String',
         'Edm.Stream' : 'String',
@@ -29,14 +31,11 @@ const primitiveTypeMapping = {
 };
 
 const additionalScalarTypes = ['\nscalar Date', '\nscalar DateTimeOffset'];
-const graphNameSpace = 'microsoft.graph.';
-const endpoint = 'https://graph.microsoft.com/';
-const version = 'v1.0';
 
 fetchMetadata();
 
 function fetchMetadata(){
-    request(endpoint+version+'/$metadata', function (error, response, body) {
+    request(graphRoot+'/$metadata', function (error, response, body) {
         if (!error){
             parseMetadata(body);
         }
@@ -169,21 +168,21 @@ function generator(dependence, entities, complexTypes, enums, entitySets, single
     defs = _.union(defs,complexDefs);
     defs = _.union(defs, queryDefs);
     defs = _.union(defs, additionalScalarTypes);
-    const helperStr = generateHelperStr();
-    const schemaStr = generateSchemaStr(defs);
+    saveCodeToFile('src/build/schema.graphql', false, defs.join(' '));
     const resolverStr = generateResolverStr(dependence, entitySets, singletons, entities, complexTypes);
-    codeGen(helperStr, schemaStr, resolverStr);
+    saveCodeToFile('src/build/schema.js', true, resolverStr);
 }
 
-function codeGen(helperStr, schemaStr, resolverStr){
-    let code =  `\n ${schemaStr} \n ${resolverStr} \n ${helperStr} `;
-    let ast = acorn.parse(code, { ecmaVersion: 6 });
-    let stream = astring.generate(ast);
+function saveCodeToFile(filename, format, code) {
+    if (format) {
+        let ast = acorn.parse(code, { ecmaVersion: 6 });
+        code = astring.generate(ast);    
+    }
 
-    fs.writeFile('build/schema.js', stream, (err)=> {
+    fs.writeFile(filename, code, (err) => {
         if (err) throw err;
-        console.log('Written to file');
-    });
+        console.log(`Saved code to ${filename}`);
+    });    
 }
 
 function generateQueryDefs(entitySets, singletons){
@@ -265,15 +264,19 @@ function convertTypeToGQL(implicitCollection, propertyValue){
     return propertyValue
 }
 
-function generateSchemaStr(defs){
-    return `const typeDefs = \` ${defs.join(' ')} \`; `;
-}
-
-function generateResolverStr(dependence, entitySets, singletons, entities, complexTypes){
+function generateResolverStr(dependence, entitySets, singletons, entities, complexTypes) {
     queryDefResolvers = generateQueryDefResolvers(entitySets, singletons);
     typeDefResolvers = generateTypeDefResolvers(dependence, entities, complexTypes);
     resolvers = _.union(queryDefResolvers, typeDefResolvers);
-    return `const resolvers = {\n ${resolvers.join(',')} \n}; `;
+    return `
+        const { graphqlResolve, parseOrRequest, makeRequest, graphRoot } = require('../resolverHelpers');
+        const resolvers = {
+             ${resolvers.join(',')}
+        };
+        module.exports = {
+            resolvers
+        }
+    `;
 }
 
 function generateQueryDefResolvers(entitySets, singletons){
@@ -308,83 +311,4 @@ function generateTypeDefResolversHelper(typeCollection, dependence, defs){
         let typeStr = `\n${typeName}: {\n ${subDefinitions.join(',\n')}} `;
         defs.push(typeStr);
     }
-}
-
-function generateHelperStr(){
-    return `
-    const graphRoot = \'${endpoint+version}\'; 
-    const request = require('request-promise');
-    module.exports = {
-        typeDefs,
-        resolvers
-    }
-    function makeRequest(path, authorization, isSecondary) {
-        var options = {
-            url: path,
-            headers: {
-                'Authorization': 'bearer ' + authorization
-            }
-        };
-        return request(options).then(function (requestBody, error) {
-            if (!error) {
-                let body = JSON.parse(requestBody);
-                if (Object.keys(body).includes('value')) {
-                    var next = body['value'];
-                    if (Array.isArray(next)) {
-                        next.map(value => value['__path'] = path + '/' + value['id']);
-                        next.map(value => value['__secondary'] = true);
-                        next.map(value => value['__session'] =  authorization);
-                    } else {
-                        next['__path'] = path;
-                        next['__secondary'] = true;
-                        next['__session'] = authorization;
-                    }
-                    return next;
-                } else {
-                    body['__path'] = path;
-                    body['__session'] = authorization;
-                    if (isSecondary) {
-                        body['__secondary'] = true;
-                    }
-                    return body;
-                }
-            } else {
-                console.log(error);
-                return 'error';
-            }
-        });
-    }
-    function graphqlResolve(obj, name){
-        return parseOrRequest(obj, name).then(response => {
-            if (Object.keys(response).includes('value')) {
-                var next = response['value'];
-                if (Array.isArray(next)) {
-                    next.map(value => value['__path'] = path);
-                }
-                return next;
-            } else if (Object.keys(response).includes('__secondary') || Array.isArray(response)) {
-                return response;
-            } else {
-                return response[name];
-            }
-        });
-    }
-
-    function parseOrRequest(obj, currentProperty) {
-        const nextPath = obj.__path + '/' + currentProperty;
-        if (Object.keys(obj).includes(currentProperty)) {
-            return new Promise((resolve, reject) => {
-                resolve({
-                    [currentProperty]: obj[currentProperty],
-                    '__path': nextPath,
-                    '__session': obj['__session']
-                });
-            });
-        } else {
-            let auth = obj['__session'];
-            let resp = makeRequest(nextPath, auth, true);
-            return resp;
-        }
-    }
-    `;        
 }
