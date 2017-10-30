@@ -328,7 +328,6 @@ function generateSchemaStr(defs){
     return `const typeDefs = \` ${defs.join(' ')} \`; `;
 }
 
-
 function generateResolverStr(dependence, entitySets, singletons, entities, complexTypes) {
     queryDefResolvers = generateQueryDefResolvers(entitySets, singletons);
     typeDefResolvers = generateTypeDefResolvers(dependence, entities, complexTypes);
