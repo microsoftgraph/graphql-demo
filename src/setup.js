@@ -197,7 +197,7 @@ function generator(dependence, entities, complexTypes, enums, entitySets, single
     complexDefs = generateTypeDefs(dependence, complexTypes, complexAnnotations);
     queryDefs = generateQueryDefs(entitySets, singletons);
     let defs = _.union(enumDefs, entityDefs);
-    defs = _.union(defs,complexDefs);
+    defs = _.union(defs, complexDefs);
     defs = _.union(defs, queryDefs);
     defs = _.union(defs, additionalScalarTypes);
     saveCodeToFile('src/build/schema.graphql', false, defs.join(' '));
