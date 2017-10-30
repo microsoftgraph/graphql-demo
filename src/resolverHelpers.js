@@ -3,14 +3,13 @@ const request = require('request-promise');
 const { graphRoot } = require('./constants');
 
 function makeRequest(path, authorization, args, isSecondary) {
-  let url = path
   if (args.id != null) {
     url = url + '/' + args.id;
   }
   var options = {
-    url: url,
+    url: path,
     headers: {
-      'Authorization': 'Bearer ' + authorization
+      'Authorization': 'bearer ' + authorization
     }
   };
   return request(options).then(function (responseBody, error) {
