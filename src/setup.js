@@ -106,8 +106,8 @@ function parseTypes(types, hasIdentity){
             }
         } else if (properties != null){
             let name = properties['_attributes']['Name'];
-            let type = properties['_attributes']['Type'];
-            mapping[name] = type;
+            let dataType = properties['_attributes']['Type'];
+            mapping[name] = dataType;
             let annotation = null;
                 if (properties['Annotation']){
                     annotation = properties['Annotation']['_attributes']['String'];
