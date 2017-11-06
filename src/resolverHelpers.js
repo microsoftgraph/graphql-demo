@@ -3,11 +3,12 @@ const request = require('request-promise');
 const { graphRoot } = require('./constants');
 
 function makeRequest(path, authorization, args, isSecondary) {
+  let url = path;
   if (args.id != null) {
-    url = url + '/' + args.id;
+    url = path + '/' + args.id;
   }
   var options = {
-    url: path,
+    url: url,
     headers: {
       'Authorization': 'bearer ' + authorization
     }
@@ -47,6 +48,7 @@ function makeRequest(path, authorization, args, isSecondary) {
       return 'error';
     }
   }).catch(function (err) {
+    console.log(err); 
     return {}; // return empty object 
   });
 }

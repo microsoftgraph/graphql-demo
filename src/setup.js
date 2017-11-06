@@ -47,8 +47,8 @@ function parseMetadata(metadata){
     let json = JSON.parse(result);
     let schema = json['edmx:Edmx']['edmx:DataServices']['Schema'];
     let enums = parseEnums(schema['EnumType']); //mapping from name to definition (node -> def)
-    let complexResponse =  parseComplex(schema['ComplexType']); //mapping from name to schema (node -> set of properties)
-    let entityResponse = parseEntities(schema['EntityType']);
+    let complexResponse =  parseTypes(schema['ComplexType'], false); //mapping from name to schema (node -> set of properties)
+    let entityResponse = parseTypes(schema['EntityType'], true);
     let complexTypes = complexResponse['complexMapping'];
     let complexDependence = complexResponse['complexDependence'];
     let entities = entityResponse['entityMapping']
@@ -59,9 +59,9 @@ function parseMetadata(metadata){
     let entitySets = parseEntitySets(entityContainer['EntitySet']); //mapping from name to type of root level entity set 
     let singletons = parseSingletons(entityContainer['Singleton']); //mapping from name to type of root level singletons
     let dependence = _.merge(complexDependence, entityDependence);
-    generator(dependence, entities, complexTypes, enums, entitySets, singletons, entityAnnotations, complexAnnotations);
+    let annotations = _.merge(complexAnnotations, entityAnnotations);
+    generator(dependence, entities, complexTypes, enums, entitySets, singletons, annotations);
 }
-
 
 function parseEnums(enums){
     let enumMapping = {}; 
@@ -79,24 +79,25 @@ function parseEnums(enums){
     return enumMapping;
 }
 
-function parseComplex(complex){
-    let complexMapping = {};
-    let complexAnnotationMapping = {};
-    let complexDependence = {};
-    for (let complexType of complex){
-        let name = complexType['_attributes']['Name'];
-        let properties = complexType['Property'];
-        let baseType = complexType['_attributes']['BaseType'];
+function parseTypes(types, hasIdentity){
+    let typeDependence = {}; //key is child type
+    let typeMapping = {};
+    let typeAnnotationMapping = {};
+    for (let type of types){
+        let name = type['_attributes']['Name'];
+        let baseType = type['_attributes']['BaseType'];
+        let properties = type['Property'];
+        let navigationProperties = type['NavigationProperty'];
         if (baseType != null){
-            complexDependence[name] = convertTypeToGQL(false, baseType);
+            typeDependence[name] = convertTypeToGQL(false, baseType);
         }
         let mapping = {};
         let annotationMapping = {};
         if (properties != null && properties.length > 0){
             for (let property of properties){
                 let name = property['_attributes']['Name'];
-                let type = property['_attributes']['Type'];
-                mapping[name] = type;
+                let dataType = property['_attributes']['Type'];
+                mapping[name] = dataType;
                 let annotation = null;
                 if (property['Annotation']){
                     annotation = property['Annotation']['_attributes']['String'];
@@ -115,45 +116,11 @@ function parseComplex(complex){
         } else {
             mapping['extension'] = 'String'
         }
-        complexAnnotationMapping[name] = annotationMapping;
-        complexMapping[name] = mapping;
-    }
-    return {"complexMapping": complexMapping,
-            "complexDependence": complexDependence,
-            "complexAnnotation": complexAnnotationMapping};
-}
-
-function parseEntities(entities){
-    let entityDependence = {}; //key is child type
-    let entityMapping = {};
-    let entityAnnotationMapping = {};
-    for (let entityType of entities){
-        let name = entityType['_attributes']['Name'];
-        let baseType = entityType['_attributes']['BaseType'];
-        let properties = entityType['Property'];
-        let navigationProperties = entityType['NavigationProperty'];
-        if (baseType != null){
-            entityDependence[name] = convertTypeToGQL(false, baseType);
-        }
-        let mapping = {};
-        let annotationMapping = {};
-        if (properties != null && properties.length > 0){
-            for (let property of properties){
-                let name = property['_attributes']['Name'];
-                let type = property['_attributes']['Type'];
-                mapping[name] = type;
-                let annotation = null;
-                if (property['Annotation']){
-                    annotation = property['Annotation']['_attributes']['String'];
-                }
-                annotationMapping[name] = annotation;
-            }
-        }
         if (navigationProperties != null && navigationProperties.length > 0){
             for (let navigationProperty of navigationProperties){
                 let name = navigationProperty['_attributes']['Name'];
-                let type = navigationProperty['_attributes']['Type'];
-                mapping[name] = type;
+                let dataType = navigationProperty['_attributes']['Type'];
+                mapping[name] = dataType;
                 let annotation = null;
                 if (navigationProperty['Annotation']){
                     annotation = navigationProperty['Annotation']['_attributes']['String'];
@@ -161,15 +128,26 @@ function parseEntities(entities){
                 annotationMapping[name] = annotation;
             }
         }
-        mapping['id'] = 'ID';
-        entityAnnotationMapping[name] = annotationMapping;
-        entityMapping[name] = mapping;
+        if (hasIdentity){
+            mapping['id'] = 'ID'; 
+        }
+        typeAnnotationMapping[name] = annotationMapping;
+        typeMapping[name] = mapping;
     }
-    return {"entityMapping": entityMapping,
-            "entityDependence": entityDependence,
-            "entityAnnotation": entityAnnotationMapping};
+    if (hasIdentity){
+        return {
+                "entityMapping": typeMapping,
+                "entityDependence": typeDependence,
+                "entityAnnotation": typeAnnotationMapping
+        };
+    } else {
+        return {
+                "complexMapping": typeMapping,
+                "complexDependence": typeDependence,
+                "complexAnnotation": typeAnnotationMapping
+        };
+    }
 }
-
 
 function parseEntitySets(entitySets){
     let entitySetMapping = {};
@@ -191,10 +169,10 @@ function parseSingletons(singletons){
     return singletonMapping;
 }
 
-function generator(dependence, entities, complexTypes, enums, entitySets, singletons, entityAnnotations, complexAnnotations){
+function generator(dependence, entities, complexTypes, enums, entitySets, singletons, annotations){
     enumDefs = generateEnumDefs(enums);
-    entityDefs = generateTypeDefs(dependence, entities, entityAnnotations);
-    complexDefs = generateTypeDefs(dependence, complexTypes, complexAnnotations);
+    entityDefs = generateTypeDefs(dependence, entities, annotations);
+    complexDefs = generateTypeDefs(dependence, complexTypes, annotations);
     queryDefs = generateQueryDefs(entitySets, singletons);
     let defs = _.union(enumDefs, entityDefs);
     defs = _.union(defs, complexDefs);
@@ -322,10 +300,6 @@ function convertTypeToGQL(implicitCollection, propertyValue){
         propertyValue = '['+propertyValue+']';
     }
     return propertyValue
-}
-
-function generateSchemaStr(defs){
-    return `const typeDefs = \` ${defs.join(' ')} \`; `;
 }
 
 function generateResolverStr(dependence, entitySets, singletons, entities, complexTypes) {
