@@ -1,3 +1,18 @@
+---
+page_type: sample
+products:
+- ms-graph
+languages:
+- javascript
+extensions:
+  contentType: samples
+  technologies:
+  - Microsoft Graph
+  services:
+  - Users
+  - Groups
+  createdDate: 8/22/2017 5:07:39 PM
+---
 # GraphQL for Microsoft Graph (DEMO)
 
 ## Call to action
