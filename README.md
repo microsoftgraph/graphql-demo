@@ -4,6 +4,7 @@ products:
 - ms-graph
 languages:
 - javascript
+description: "GraphQL for Microsoft Graph"
 extensions:
   contentType: samples 
   technologies:
