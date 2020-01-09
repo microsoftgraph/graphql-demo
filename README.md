@@ -1,20 +1,6 @@
----
-page_type: sample
-products:
-- ms-graph
-languages:
-- javascript
-description: "GraphQL for Microsoft Graph"
-extensions:
-  contentType: samples 
-  technologies:
-  - Microsoft Graph
-  services:
-  - Users
-  - Groups
-  createdDate: 8/22/2017 5:07:39 PM
----
-# GraphQL for Microsoft Graph (DEMO)
+# [ARCHIVED] GraphQL for Microsoft Graph (DEMO)
+
+**Note:** This repo is archived and no longer actively maintained. Security vulnerabilities may exist in the project, or its dependencies. If you plan to reuse or run any code from this repo, be sure to perform appropriate security checks on the code or dependencies first.
 
 ## Call to action
 We are looking for feedback from developers interested in integrating with Microsoft Graph via GraphQL. To share your thoughts and scenarios, please leave a comment on [UserVoice](https://officespdev.uservoice.com/forums/224641-feature-requests-and-feedback/suggestions/16819672-graphql-api-for-the-microsoft-graph). 
